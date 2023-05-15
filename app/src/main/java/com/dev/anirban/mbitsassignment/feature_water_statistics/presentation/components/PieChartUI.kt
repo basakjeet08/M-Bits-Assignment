@@ -33,7 +33,7 @@ import com.dev.anirban.mbitsassignment.ui.theme.pieChartRed
     showBackground = true
 )
 @Composable
-private fun DefaultPreviewLoading() {
+private fun DefaultPreview() {
     MBitsAssignmentTheme {
 
         PieChartUI(

@@ -28,7 +28,7 @@ import com.dev.anirban.mbitsassignment.ui.theme.MBitsAssignmentTheme
     showBackground = true
 )
 @Composable
-private fun DefaultPreviewLoading() {
+private fun DefaultPreview() {
     MBitsAssignmentTheme {
         TabOptionListUI(
             tabList = listOf(
