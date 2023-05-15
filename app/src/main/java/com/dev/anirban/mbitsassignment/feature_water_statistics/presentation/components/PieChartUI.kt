@@ -60,7 +60,7 @@ private fun DefaultPreviewLoading() {
  * Parent
  * @param itemsList This is the list of Items with Names which needs to be displayed
  * @param colorList This is the list of Colors in order with the Items
- * @param minHeight This is the minimum height of the Row layout
+ * @param minHeight This is the minimum height of the Row layout Range(150 dp to 200 dp)
  */
 @Composable
 fun PieChartUI(
@@ -82,12 +82,12 @@ fun PieChartUI(
         // This contains the Pie Chart Graph
         Box(
             modifier = Modifier
-                .weight(.9f)
+                .width(minHeight)
                 .height(minHeight)
                 .drawBehind {
 
                     // Size of the chart (We are taking a bit less than the Canvas to make it look good)
-                    val chartSize = size / 1.75f
+                    val chartSize = size / 2f
 
                     // List of all the Floating Numbers which will be used to display Chart
                     val valueList: MutableList<Float> = mutableListOf()
