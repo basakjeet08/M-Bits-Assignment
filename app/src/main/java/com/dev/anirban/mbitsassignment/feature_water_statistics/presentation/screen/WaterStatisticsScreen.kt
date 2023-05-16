@@ -10,10 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.dev.anirban.mbitsassignment.feature_water_statistics.presentation.components.CardViewUI
-import com.dev.anirban.mbitsassignment.feature_water_statistics.presentation.components.LineGraphUI
-import com.dev.anirban.mbitsassignment.feature_water_statistics.presentation.components.PieChartUI
-import com.dev.anirban.mbitsassignment.feature_water_statistics.presentation.components.TabOptionListUI
+import com.dev.anirban.mbitsassignment.feature_water_statistics.presentation.components.*
 import com.dev.anirban.mbitsassignment.ui.theme.MBitsAssignmentTheme
 import com.dev.anirban.mbitsassignment.ui.theme.pieChartBlue
 import com.dev.anirban.mbitsassignment.ui.theme.pieChartGreen
@@ -74,7 +71,7 @@ fun WaterStatisticsScreen() {
 
             // This function draws the Line chart with one Single Line
             CardViewUI(cardHeading = "Monthly Progress") {
-                LineGraphUI(
+                LineGraphUIX(
                     coordinates = listOf(
                         Pair(6f, "Jan"),
                         Pair(5f, "Mar"),
