@@ -21,9 +21,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dev.anirban.mbitsassignment.ui.theme.MBitsAssignmentTheme
-import com.dev.anirban.mbitsassignment.ui.theme.pieChartBlue
-import com.dev.anirban.mbitsassignment.ui.theme.pieChartGreen
-import com.dev.anirban.mbitsassignment.ui.theme.pieChartRed
+import com.dev.anirban.mbitsassignment.ui.theme.customBlueForCharts
+import com.dev.anirban.mbitsassignment.ui.theme.customGreenForCharts
+import com.dev.anirban.mbitsassignment.ui.theme.customRedForCharts
 
 // Preview Function
 @Preview("Light")
@@ -43,9 +43,9 @@ private fun DefaultPreview() {
                 Pair("Soft Drink", 500.0f)
             ),
             colorList = listOf(
-                pieChartBlue,
-                pieChartGreen,
-                pieChartRed
+                customBlueForCharts,
+                customGreenForCharts,
+                customRedForCharts
             ),
             unit = "mL"
         )

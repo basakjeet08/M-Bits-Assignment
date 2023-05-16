@@ -15,6 +15,7 @@ val CustomBlue = Color(0xFF0088FF)
 val CustomGrey = Color(0xFF787878)
 
 // Pie Chart Custom Colors
-val pieChartBlue = Color(0xFF0087FE)
-val pieChartGreen = Color(0xFF2AD100)
-val pieChartRed = Color(0xFFFE2E2E)
+val customBlueForCharts = Color(0xFF0087FE)
+val customGreenForCharts = Color(0xFF2AD100)
+val customRedForCharts = Color(0xFFFE2E2E)
+val customYellowForCharts = Color(0xFFE2B93B)

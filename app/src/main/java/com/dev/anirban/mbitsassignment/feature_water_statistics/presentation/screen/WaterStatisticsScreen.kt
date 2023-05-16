@@ -11,10 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dev.anirban.mbitsassignment.feature_water_statistics.presentation.components.*
-import com.dev.anirban.mbitsassignment.ui.theme.MBitsAssignmentTheme
-import com.dev.anirban.mbitsassignment.ui.theme.pieChartBlue
-import com.dev.anirban.mbitsassignment.ui.theme.pieChartGreen
-import com.dev.anirban.mbitsassignment.ui.theme.pieChartRed
+import com.dev.anirban.mbitsassignment.ui.theme.*
 
 // Preview Composable Function
 @Preview("Light")
@@ -72,7 +69,7 @@ fun WaterStatisticsScreen() {
             // This function draws the Line chart with one Single Line
             CardViewUI(cardHeading = "Monthly Progress") {
                 LineGraphUI(
-                    yAxisReadings = listOf(6f, 5f, 4f, 6f, 7.5f, 7f, 6f),
+                    yAxisReadings = listOf(listOf(6f, 5f, 4f, 6f, 7.5f, 7f, 6f)),
                     xAxisReadings = listOf(
                         "Jan",
                         "Mar",
@@ -82,8 +79,11 @@ fun WaterStatisticsScreen() {
                         "Nov",
                         "Dec"
                     ),
-                    lineColor = pieChartBlue,
-                    dotColor = pieChartGreen
+                    lineColor = listOf(customBlueForCharts),
+                    dotColor = listOf(customGreenForCharts),
+                    numOfXMarkers = 7,
+                    numOfYMarkers = 5,
+                    height = 200.dp
                 )
             }
 
@@ -98,11 +98,35 @@ fun WaterStatisticsScreen() {
                         Pair("Soft Drink", 500f)
                     ),
                     colorList = listOf(
-                        pieChartBlue,
-                        pieChartGreen,
-                        pieChartRed
+                        customBlueForCharts,
+                        customGreenForCharts,
+                        customRedForCharts
                     ),
                     unit = "mL"
+                )
+            }
+
+            // This function draws the Line chart with one Single Line
+            CardViewUI(cardHeading = "Beverages") {
+                LineGraphUI(
+                    yAxisReadings = listOf(
+                        listOf(3.8f, 3f, 2f, 3.9f, 4.9f, 4.2f, 3.8f),
+                        listOf(3.5f, 2.2f, 3f, 3.4f, 3f, 4.4f, 3f)
+                    ),
+                    xAxisReadings = listOf(
+                        "Jan",
+                        "Mar",
+                        "May",
+                        "Jul",
+                        "Sep",
+                        "Nov",
+                        "Dec"
+                    ),
+                    lineColor = listOf(customGreenForCharts, customBlueForCharts),
+                    dotColor = listOf(customRedForCharts, customYellowForCharts),
+                    numOfXMarkers = 7,
+                    numOfYMarkers = 5,
+                    height = 200.dp
                 )
             }
         }

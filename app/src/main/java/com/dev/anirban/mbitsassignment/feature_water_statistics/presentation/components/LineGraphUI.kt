@@ -18,8 +18,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dev.anirban.mbitsassignment.ui.theme.MBitsAssignmentTheme
-import com.dev.anirban.mbitsassignment.ui.theme.pieChartBlue
-import com.dev.anirban.mbitsassignment.ui.theme.pieChartGreen
+import com.dev.anirban.mbitsassignment.ui.theme.customBlueForCharts
+import com.dev.anirban.mbitsassignment.ui.theme.customGreenForCharts
 
 
 // Preview Function
@@ -33,7 +33,7 @@ import com.dev.anirban.mbitsassignment.ui.theme.pieChartGreen
 private fun DefaultPreview() {
     MBitsAssignmentTheme {
         LineGraphUI(
-            yAxisReadings = listOf(6f, 5f, 4f, 6f, 7.5f, 7f, 6f),
+            yAxisReadings = listOf(listOf(6f, 5f, 4f, 6f, 7.5f, 7f, 6f)),
             xAxisReadings = listOf(
                 "Jan",
                 "Mar",
@@ -43,8 +43,11 @@ private fun DefaultPreview() {
                 "Nov",
                 "Dec"
             ),
-            lineColor = pieChartBlue,
-            dotColor = pieChartGreen
+            lineColor = listOf(customBlueForCharts),
+            dotColor = listOf(customGreenForCharts),
+            numOfXMarkers = 7,
+            numOfYMarkers = 5,
+            height = 200.dp
         )
     }
 }
@@ -55,10 +58,10 @@ private fun DefaultPreview() {
  * @param modifier To be passed by the Parent Layout
  * @param xAxisReadings This is the list of X - coordinates which need to be mapped in the Graph
  * (Always provide the coordinates in ascending order of the Graph from left to right)
- * @param yAxisReadings This is the list of Y - coordinates which need to be mapped in the Graph
+ * @param yAxisReadings This is the list of set of Y - coordinates which need to be mapped in the Graph
  * (Always provide the coordinates in ascending order of the Graph from left to right)
- * @param lineColor This is the color of the Line of the Graph Reading
- * @param dotColor This is the color of the Dot of the graph
+ * @param lineColor This is the list of color of the Line of a particular Set of the Graph Reading
+ * @param dotColor This is the list of color of the Dot of a particular Set of the graph
  * @param height This is the Minimum height of the Graph
  * @param numOfXMarkers This is the Number of X markers which will be there in the Graph
  * @param numOfYMarkers This is the number of Y markers which will be there in the Graph
@@ -66,13 +69,13 @@ private fun DefaultPreview() {
 @Composable
 fun LineGraphUI(
     modifier: Modifier = Modifier,
-    yAxisReadings: List<Float>,
+    yAxisReadings: List<List<Float>>,
     xAxisReadings: List<String>,
-    lineColor: Color,
-    dotColor: Color,
+    lineColor: List<Color>,
+    dotColor: List<Color>,
     height: Dp = 200.dp,
-    numOfYMarkers: Int = 5,
-    numOfXMarkers: Int = 7
+    numOfYMarkers: Int,
+    numOfXMarkers: Int
 ) {
 
     // Y Axis Marker bounds are held by these variables
@@ -81,7 +84,7 @@ fun LineGraphUI(
 
     // This function calculates the Bounds of the Y Axis and also sets the above two variable values
     calculateReadingsBounds(
-        yAxisReadings = yAxisReadings,
+        yAxisReadingsList = yAxisReadings,
         yMarkerCount = numOfYMarkers,
         setYReadingsRange = { lower, upper ->
             yLowerReadingRange = lower
@@ -129,7 +132,7 @@ fun LineGraphUI(
 
         // This function plots the Graph and joins the Line
         plotGraphPoints(
-            yAxisReadings = yAxisReadings,
+            yAxisReadingsSet = yAxisReadings,
             yOffsetRatio = spaceBetweenYMarkers,
             xOffsetRatio = spaceBetweenXMarkers,
             yUpperBound = yUpperReadingRange,
@@ -147,28 +150,31 @@ fun LineGraphUI(
  * This function calculates the Minimum and Maximum Markers of Y Axis and returns them to the parent
  * using a lambda Function
  *
- * @param yAxisReadings This is the coordinates of the Y Axis Readings
+ * @param yAxisReadingsList This is the set of coordinates of the Y Axis Readings
  * @param yMarkerCount This is the Number of Markers to be set on Y Axis
  * @param setYReadingsRange This is the lambda function which sends the minimum and maximum value to the
  * parent function
  */
 private fun calculateReadingsBounds(
-    yAxisReadings: List<Float>,
+    yAxisReadingsList: List<List<Float>>,
     yMarkerCount: Int,
     setYReadingsRange: (yLowerBound: Int, yUpperBound: Int) -> Unit,
 ) {
 
     // These are the Minimum and Maximum readings that needs to be shown
-    var yMaxReading = yAxisReadings[0]
-    var yMinReading = yAxisReadings[0]
+    var yMaxReading = yAxisReadingsList[0][0]
+    var yMinReading = yAxisReadingsList[0][0]
 
     // Searching for the Minimum and maximum from the list
-    yAxisReadings.forEach {
-        if (yMaxReading < it)
-            yMaxReading = it
+    yAxisReadingsList.forEach { readingSet ->
 
-        if (yMinReading > it)
-            yMinReading = it
+        readingSet.forEach {
+            if (yMaxReading < it)
+                yMaxReading = it
+
+            if (yMinReading > it)
+                yMinReading = it
+        }
     }
 
     // Finding the Min and Maximum of the Given Readings
@@ -282,7 +288,7 @@ private fun DrawScope.drawGraphAxisAndMarkersX(
 /**
  * This function plots the Graph Points and joins them using a Curved Line
  *
- * @param yAxisReadings This contains all the Y - Coordinates of the Points to be plotted in the Graph
+ * @param yAxisReadingsSet This contains set of the Y - Coordinates of the Points to be plotted in the Graph
  * @param yOffsetRatio This is the Offset from the Y Axis or TOP
  * @param xOffsetRatio This is the Offset from the X Axis or the Left
  * @param yUpperBound This is the Upper Bounds of the Graph Marker
@@ -293,15 +299,15 @@ private fun DrawScope.drawGraphAxisAndMarkersX(
  * @param lineColor This is the color of all the line of this type of reading
  */
 private fun DrawScope.plotGraphPoints(
-    yAxisReadings: List<Float>,
+    yAxisReadingsSet: List<List<Float>>,
     yOffsetRatio: Float,
     xOffsetRatio: Float,
     yUpperBound: Int,
     yLowerBound: Int,
     yMarkerCount: Int,
     yLeastMarker: Int,
-    dotColor: Color,
-    lineColor: Color
+    dotColor: List<Color>,
+    lineColor: List<Color>
 ) {
 
     // This is the Size of the Graph Y - Axis
@@ -314,43 +320,59 @@ private fun DrawScope.plotGraphPoints(
     val yRatio = ySizeOfGraph / differenceBetweenMaxAndMin
 
     // This variable contains all the Offset of all the graph coordinates
-    val graphCoordinates: MutableList<Offset> = mutableListOf()
+    val graphCoordinatesList: MutableList<MutableList<Offset>> = mutableListOf()
 
     // Adding the Offsets to the Variable
-    yAxisReadings.forEachIndexed { index, coordinate ->
+    yAxisReadingsSet.forEachIndexed { coordinateSetIndex, coordinateSet ->
 
-        graphCoordinates.add(
-            Offset(
-                x = 24f + (index + 1) * xOffsetRatio,
-                y = ySizeOfGraph - (yRatio * (coordinate - yLeastMarker))
-            )
-        )
-    }
+        // Calculates the coordinate of One Set of the List
+        val graphCoordinates: MutableList<Offset> = mutableListOf()
 
-    // Coordinates of the previous variable
-    var previousOffset = graphCoordinates[0]
+        coordinateSet.forEachIndexed { index, fl ->
 
-    // drawing the Circle points and the Curved Line
-    graphCoordinates.forEachIndexed { index, offset ->
-
-        // This function draws the Circle points
-        drawCircle(
-            color = dotColor,
-            radius = 10f,
-            center = offset
-        )
-
-        if (index != 0) {
-
-            // This function draws the curved Lines
-            drawLine(
-                color = lineColor,
-                start = previousOffset,
-                end = offset,
-                strokeWidth = 3f
+            // Adding the Coordinates of points in the same Set
+            graphCoordinates.add(
+                Offset(
+                    x = 24f + (index + 1) * xOffsetRatio,
+                    y = ySizeOfGraph - (yRatio * (fl - yLeastMarker))
+                )
             )
         }
-        previousOffset = offset
+
+        // Adding the coordinates of a whole Set in one Index of the Graph
+        graphCoordinatesList.add(
+            coordinateSetIndex,
+            graphCoordinates
+        )
     }
 
+    // drawing the Circle points and the Curved Line
+    graphCoordinatesList.forEachIndexed { indexSet, coordinateSet ->
+
+        // Coordinates of the previous variable of the same set of coordinate given
+        var previousPoint = graphCoordinatesList[indexSet][0]
+
+        // Draws the Design for every Set of Coordinates and keeps the different sets separated
+        coordinateSet.forEachIndexed { index, currentPoint ->
+
+            // This function draws the Circle points
+            drawCircle(
+                color = dotColor[indexSet],
+                radius = 10f,
+                center = currentPoint
+            )
+
+            if (index != 0) {
+
+                // This function draws the curved Lines
+                drawLine(
+                    color = lineColor[indexSet],
+                    start = previousPoint,
+                    end = currentPoint,
+                    strokeWidth = 3f
+                )
+            }
+            previousPoint = currentPoint
+        }
+    }
 }
