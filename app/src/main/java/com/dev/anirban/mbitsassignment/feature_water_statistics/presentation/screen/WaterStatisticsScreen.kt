@@ -1,13 +1,16 @@
 package com.dev.anirban.mbitsassignment.feature_water_statistics.presentation.screen
 
 import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dev.anirban.mbitsassignment.feature_water_statistics.presentation.components.*
@@ -35,13 +38,11 @@ fun WaterStatisticsScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.secondary)
     ) {
 
         // This is the Item which is selected in the Tab Option Layout
         val selectedItem = remember { mutableStateOf(0) }
-
-        // This is used to leave some space between the App Title and the Body UI
-        Spacer(modifier = Modifier.height(16.dp))
 
         // This Function makes the Tab Layout UI
         TabOptionListUI(
@@ -83,7 +84,8 @@ fun WaterStatisticsScreen() {
                     dotColor = listOf(customGreenForCharts),
                     numOfXMarkers = 7,
                     numOfYMarkers = 5,
-                    height = 200.dp
+                    height = 200.dp,
+                    textColor = MaterialTheme.colorScheme.onSurface.toArgb()
                 )
             }
 
@@ -126,9 +128,12 @@ fun WaterStatisticsScreen() {
                     dotColor = listOf(customRedForCharts, customYellowForCharts),
                     numOfXMarkers = 7,
                     numOfYMarkers = 5,
-                    height = 200.dp
+                    height = 200.dp,
+                    textColor = MaterialTheme.colorScheme.onSurface.toArgb()
                 )
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }

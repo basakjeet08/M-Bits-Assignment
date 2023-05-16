@@ -6,6 +6,7 @@ import android.graphics.Typeface
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -47,7 +48,8 @@ private fun DefaultPreview() {
             dotColor = listOf(customGreenForCharts),
             numOfXMarkers = 7,
             numOfYMarkers = 5,
-            height = 200.dp
+            height = 200.dp,
+            textColor = MaterialTheme.colorScheme.onSurface.toArgb()
         )
     }
 }
@@ -75,7 +77,8 @@ fun LineGraphUI(
     dotColor: List<Color>,
     height: Dp = 200.dp,
     numOfYMarkers: Int,
-    numOfXMarkers: Int
+    numOfXMarkers: Int,
+    textColor: Int
 ) {
 
     // Y Axis Marker bounds are held by these variables
@@ -124,7 +127,8 @@ fun LineGraphUI(
             xAxisMarkers = xAxisReadings,
             setLeastMarker = {
                 yLeastMarker = it
-            }
+            },
+            textColor = textColor
         ) { ySpace, xSpace ->
             spaceBetweenYMarkers = ySpace
             spaceBetweenXMarkers = xSpace
@@ -200,6 +204,7 @@ private fun calculateReadingsBounds(
  * @param yPadding This is the padding from the top of the Canvas
  * @param xAxisMarkers This is the List of Strings which needs to be there on X - Axis
  * @param setLeastMarker This function is used to set the Lowest Marker in the Graph Y - Axis
+ * @param textColor This is the Color of the Text of the Graph Markers
  * @param setOffsetOfAxis This function sets the Offset for both the Axis
  */
 private fun DrawScope.drawGraphAxisAndMarkersX(
@@ -211,7 +216,8 @@ private fun DrawScope.drawGraphAxisAndMarkersX(
     yPadding: Float,
     xAxisMarkers: List<String>,
     setLeastMarker: (Int) -> Unit,
-    setOffsetOfAxis: (yOffsetRatio: Float, xOffsetRatio: Float) -> Unit
+    textColor: Int,
+    setOffsetOfAxis: (yOffsetRatio: Float, xOffsetRatio: Float) -> Unit,
 ) {
 
     // Total Size of the Canvas which can be used for the Graph
@@ -238,7 +244,7 @@ private fun DrawScope.drawGraphAxisAndMarkersX(
             xPadding - 24f,
             (yOffsetRatio * i) + 12f,
             Paint().apply {
-                color = Color.Black.toArgb()
+                color = textColor
                 textSize = 12.sp.toPx()
                 textAlign = Paint.Align.LEFT
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
@@ -276,7 +282,7 @@ private fun DrawScope.drawGraphAxisAndMarkersX(
             xOffsetRatio * (index + 1),
             yOffsetRatio * (yMarkerCount + 1),
             Paint().apply {
-                color = Color.Black.toArgb()
+                color = textColor
                 textSize = 12.sp.toPx()
                 textAlign = Paint.Align.LEFT
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
@@ -358,7 +364,7 @@ private fun DrawScope.plotGraphPoints(
             // This function draws the Circle points
             drawCircle(
                 color = dotColor[indexSet],
-                radius = 10f,
+                radius = 8f,
                 center = currentPoint
             )
 

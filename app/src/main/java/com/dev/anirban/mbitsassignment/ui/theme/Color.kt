@@ -14,6 +14,13 @@ val Pink40 = Color(0xFF7D5260)
 val CustomBlue = Color(0xFF0088FF)
 val CustomGrey = Color(0xFF787878)
 
+
+val CustomLightStatusBarColor = Color(0xFFE5E5E5)
+val CustomDarkStatusBarColor = Color(0xFF202020)
+val CustomLightBackgroundColor = Color(0xFFE5E5E5)
+val CustomDarkBackgroundColor = Color(0xFF202020)
+
+
 // Pie Chart Custom Colors
 val customBlueForCharts = Color(0xFF0087FE)
 val customGreenForCharts = Color(0xFF2AD100)
