@@ -32,16 +32,19 @@ import com.dev.anirban.mbitsassignment.ui.theme.pieChartGreen
 @Composable
 private fun DefaultPreview() {
     MBitsAssignmentTheme {
-        LineGraphUIX(
-            coordinates = listOf(
-                Pair(6f, "Jan"),
-                Pair(5f, "Mar"),
-                Pair(4f, "May"),
-                Pair(6f, "Jul"),
-                Pair(7.5f, "Sep"),
-                Pair(7f, "Nov"),
-                Pair(6f, "Dec")
-            )
+        LineGraphUI(
+            yAxisReadings = listOf(6f, 5f, 4f, 6f, 7.5f, 7f, 6f),
+            xAxisReadings = listOf(
+                "Jan",
+                "Mar",
+                "May",
+                "Jul",
+                "Sep",
+                "Nov",
+                "Dec"
+            ),
+            lineColor = pieChartBlue,
+            dotColor = pieChartGreen
         )
     }
 }
@@ -50,42 +53,39 @@ private fun DefaultPreview() {
  * This function draws the Line Graph in the UI
  *
  * @param modifier To be passed by the Parent Layout
- * @param coordinates This is the list of coordinates which need to be mapped in the Graph (Always
- * provide the coordinates in ascending order of the Graph from left to right)
+ * @param xAxisReadings This is the list of X - coordinates which need to be mapped in the Graph
+ * (Always provide the coordinates in ascending order of the Graph from left to right)
+ * @param yAxisReadings This is the list of Y - coordinates which need to be mapped in the Graph
+ * (Always provide the coordinates in ascending order of the Graph from left to right)
+ * @param lineColor This is the color of the Line of the Graph Reading
+ * @param dotColor This is the color of the Dot of the graph
  * @param height This is the Minimum height of the Graph
  * @param numOfXMarkers This is the Number of X markers which will be there in the Graph
  * @param numOfYMarkers This is the number of Y markers which will be there in the Graph
  */
 @Composable
-fun LineGraphUIX(
+fun LineGraphUI(
     modifier: Modifier = Modifier,
-    coordinates: List<Pair<Float, String>>,
-    height: Dp = 180.dp,
+    yAxisReadings: List<Float>,
+    xAxisReadings: List<String>,
+    lineColor: Color,
+    dotColor: Color,
+    height: Dp = 200.dp,
     numOfYMarkers: Int = 5,
     numOfXMarkers: Int = 7
 ) {
 
-    // These variables will contains the Coordinate's X and Y Axis individually
-    val yAxisData: MutableList<Float> = mutableListOf()
-    val xAxisData: MutableList<String> = mutableListOf()
-
-    // Fetching the X and Y coordinates accordingly
-    coordinates.forEach {
-        yAxisData.add(it.first)
-        xAxisData.add(it.second)
-    }
-
     // Y Axis Marker bounds are held by these variables
-    var yLowerBounds = 0
-    var yUpperBounds = 0
+    var yLowerReadingRange = 0
+    var yUpperReadingRange = 0
 
     // This function calculates the Bounds of the Y Axis and also sets the above two variable values
-    calculateLineBoundsX(
-        coordinates = coordinates,
+    calculateReadingsBounds(
+        yAxisReadings = yAxisReadings,
         yMarkerCount = numOfYMarkers,
-        setYBounds = { lower, upper ->
-            yLowerBounds = lower
-            yUpperBounds = upper
+        setYReadingsRange = { lower, upper ->
+            yLowerReadingRange = lower
+            yUpperReadingRange = upper
         }
     )
 
@@ -103,39 +103,41 @@ fun LineGraphUIX(
         val xPadding = (size.width - componentSize.width) / 2f
         val yPadding = (size.height - componentSize.height) / 2f
 
-        // These variables keeps the offset/Scale ratio
-        var xOffsetRatio = 0f
-        var yOffsetRatio = 0f
+        // These variables are the spaces between their respective Markers Markers
+        var spaceBetweenXMarkers = 0f
+        var spaceBetweenYMarkers = 0f
 
         // This variables contains the lowest Marker in the Graph in Y - Axis
-        var lowestMarker = 0
+        var yLeastMarker = 0
 
         // This function draws the Axis and the Markers
         drawGraphAxisAndMarkersX(
-            yUpperBounds = yUpperBounds,
-            yLowerBounds = yLowerBounds,
+            yUpperBounds = yUpperReadingRange,
+            yLowerBounds = yLowerReadingRange,
             xMarkerCount = numOfXMarkers,
             yMarkerCount = numOfYMarkers,
             xPadding = xPadding,
             yPadding = yPadding,
-            xAxisMarkers = xAxisData,
-            setLowestMarker = {
-                lowestMarker = it
+            xAxisMarkers = xAxisReadings,
+            setLeastMarker = {
+                yLeastMarker = it
             }
-        ) { yRatio, xRatio ->
-            yOffsetRatio = yRatio
-            xOffsetRatio = xRatio
+        ) { ySpace, xSpace ->
+            spaceBetweenYMarkers = ySpace
+            spaceBetweenXMarkers = xSpace
         }
 
         // This function plots the Graph and joins the Line
         plotGraphPoints(
-            coordinates = coordinates,
-            yOffsetRatio = yOffsetRatio,
-            xOffsetRatio = xOffsetRatio,
-            yUpperBound = yUpperBounds,
-            yLowerBound = yLowerBounds,
+            yAxisReadings = yAxisReadings,
+            yOffsetRatio = spaceBetweenYMarkers,
+            xOffsetRatio = spaceBetweenXMarkers,
+            yUpperBound = yUpperReadingRange,
+            yLowerBound = yLowerReadingRange,
             yMarkerCount = numOfYMarkers,
-            lowestMarker = lowestMarker
+            yLeastMarker = yLeastMarker,
+            dotColor = dotColor,
+            lineColor = lineColor
         )
     }
 }
@@ -145,28 +147,28 @@ fun LineGraphUIX(
  * This function calculates the Minimum and Maximum Markers of Y Axis and returns them to the parent
  * using a lambda Function
  *
- * @param coordinates This is the coordinates of the X,Y Axis Readings
+ * @param yAxisReadings This is the coordinates of the Y Axis Readings
  * @param yMarkerCount This is the Number of Markers to be set on Y Axis
- * @param setYBounds This is the lambda function which sends the minimum and maximum value to the
+ * @param setYReadingsRange This is the lambda function which sends the minimum and maximum value to the
  * parent function
  */
-private fun calculateLineBoundsX(
-    coordinates: List<Pair<Float, String>>,
+private fun calculateReadingsBounds(
+    yAxisReadings: List<Float>,
     yMarkerCount: Int,
-    setYBounds: (yLowerBound: Int, yUpperBound: Int) -> Unit,
+    setYReadingsRange: (yLowerBound: Int, yUpperBound: Int) -> Unit,
 ) {
 
     // These are the Minimum and Maximum readings that needs to be shown
-    var yMaxReading = coordinates[0].first
-    var yMinReading = coordinates[0].first
+    var yMaxReading = yAxisReadings[0]
+    var yMinReading = yAxisReadings[0]
 
     // Searching for the Minimum and maximum from the list
-    coordinates.forEach {
-        if (yMaxReading < it.first)
-            yMaxReading = it.first
+    yAxisReadings.forEach {
+        if (yMaxReading < it)
+            yMaxReading = it
 
-        if (yMinReading > it.first)
-            yMinReading = it.first
+        if (yMinReading > it)
+            yMinReading = it
     }
 
     // Finding the Min and Maximum of the Given Readings
@@ -174,7 +176,7 @@ private fun calculateLineBoundsX(
     val yLowerBounds = ((yMinReading / yMarkerCount).toInt() - 1) * yMarkerCount
 
     // Setting the reading Bounds back to the Parent for further processing
-    setYBounds(
+    setYReadingsRange(
         if (yLowerBounds >= 0) yLowerBounds else 0,
         yUpperBound
     )
@@ -191,7 +193,7 @@ private fun calculateLineBoundsX(
  * @param xPadding This is the padding from the Left of the Canvas
  * @param yPadding This is the padding from the top of the Canvas
  * @param xAxisMarkers This is the List of Strings which needs to be there on X - Axis
- * @param setLowestMarker This function is used to set the Lowest Marker in the Graph Y - Axis
+ * @param setLeastMarker This function is used to set the Lowest Marker in the Graph Y - Axis
  * @param setOffsetOfAxis This function sets the Offset for both the Axis
  */
 private fun DrawScope.drawGraphAxisAndMarkersX(
@@ -202,7 +204,7 @@ private fun DrawScope.drawGraphAxisAndMarkersX(
     xPadding: Float,
     yPadding: Float,
     xAxisMarkers: List<String>,
-    setLowestMarker: (Int) -> Unit,
+    setLeastMarker: (Int) -> Unit,
     setOffsetOfAxis: (yOffsetRatio: Float, xOffsetRatio: Float) -> Unit
 ) {
 
@@ -250,16 +252,14 @@ private fun DrawScope.drawGraphAxisAndMarkersX(
             ),
             strokeWidth = 2f
         )
-
-//        lowestMarker = currentYMarker
     }
 
     // This variable contains the Lowest Marker in the Y - Axis
-    val lowestMarker =
+    val yLeastMarker =
         yUpperBounds - (((yUpperBounds - yLowerBounds) / yMarkerCount) * (yMarkerCount - 1))
 
     // This function sets the lowest Marker of the Graph in the Parent Function
-    setLowestMarker(lowestMarker)
+    setLeastMarker(yLeastMarker)
 
     // This Draws the Y Markers below the Graph
     xAxisMarkers.forEachIndexed { index, currentMarker ->
@@ -282,21 +282,26 @@ private fun DrawScope.drawGraphAxisAndMarkersX(
 /**
  * This function plots the Graph Points and joins them using a Curved Line
  *
- * @param coordinates This contains all the Coordinates of the Points to be plotted in the Graph
+ * @param yAxisReadings This contains all the Y - Coordinates of the Points to be plotted in the Graph
  * @param yOffsetRatio This is the Offset from the Y Axis or TOP
  * @param xOffsetRatio This is the Offset from the X Axis or the Left
  * @param yUpperBound This is the Upper Bounds of the Graph Marker
  * @param yLowerBound This is the Lower Bounds of the Graph marker
- * @param lowestMarker This is the Lowest Marker point of the Y Axis
+ * @param yMarkerCount This is the count of how many markers are shown in the Graph
+ * @param yLeastMarker This is the Lowest Marker point of the Y Axis
+ * @param dotColor This is the color of all the dots of this type of reading
+ * @param lineColor This is the color of all the line of this type of reading
  */
 private fun DrawScope.plotGraphPoints(
-    coordinates: List<Pair<Float, String>>,
+    yAxisReadings: List<Float>,
     yOffsetRatio: Float,
     xOffsetRatio: Float,
     yUpperBound: Int,
     yLowerBound: Int,
     yMarkerCount: Int,
-    lowestMarker: Int
+    yLeastMarker: Int,
+    dotColor: Color,
+    lineColor: Color
 ) {
 
     // This is the Size of the Graph Y - Axis
@@ -312,33 +317,25 @@ private fun DrawScope.plotGraphPoints(
     val graphCoordinates: MutableList<Offset> = mutableListOf()
 
     // Adding the Offsets to the Variable
-    coordinates.forEachIndexed { index, coordinate ->
+    yAxisReadings.forEachIndexed { index, coordinate ->
 
         graphCoordinates.add(
             Offset(
                 x = 24f + (index + 1) * xOffsetRatio,
-                y = ySizeOfGraph - (yRatio * (coordinate.first - lowestMarker))
+                y = ySizeOfGraph - (yRatio * (coordinate - yLeastMarker))
             )
         )
     }
-//        drawCircle(
-//            color = pieChartGreen,
-//            radius = 5f,
-//            center = Offset(
-//                x = 24f + (index + 1) * xOffsetRatio,
-//                y = sizeOfGraph - (yRatio * (coordinate.first - lowestMarker))
-//            )
-//        )
-//    }
 
+    // Coordinates of the previous variable
     var previousOffset = graphCoordinates[0]
 
     // drawing the Circle points and the Curved Line
     graphCoordinates.forEachIndexed { index, offset ->
 
-        // This function draws the Circle points 
+        // This function draws the Circle points
         drawCircle(
-            color = pieChartGreen,
+            color = dotColor,
             radius = 10f,
             center = offset
         )
@@ -347,7 +344,7 @@ private fun DrawScope.plotGraphPoints(
 
             // This function draws the curved Lines
             drawLine(
-                color = pieChartBlue,
+                color = lineColor,
                 start = previousOffset,
                 end = offset,
                 strokeWidth = 3f

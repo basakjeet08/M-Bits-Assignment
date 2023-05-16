@@ -71,16 +71,19 @@ fun WaterStatisticsScreen() {
 
             // This function draws the Line chart with one Single Line
             CardViewUI(cardHeading = "Monthly Progress") {
-                LineGraphUIX(
-                    coordinates = listOf(
-                        Pair(6f, "Jan"),
-                        Pair(5f, "Mar"),
-                        Pair(4f, "May"),
-                        Pair(6f, "Jul"),
-                        Pair(7.5f, "Sep"),
-                        Pair(7f, "Nov"),
-                        Pair(6f, "Dec")
-                    )
+                LineGraphUI(
+                    yAxisReadings = listOf(6f, 5f, 4f, 6f, 7.5f, 7f, 6f),
+                    xAxisReadings = listOf(
+                        "Jan",
+                        "Mar",
+                        "May",
+                        "Jul",
+                        "Sep",
+                        "Nov",
+                        "Dec"
+                    ),
+                    lineColor = pieChartBlue,
+                    dotColor = pieChartGreen
                 )
             }
 
