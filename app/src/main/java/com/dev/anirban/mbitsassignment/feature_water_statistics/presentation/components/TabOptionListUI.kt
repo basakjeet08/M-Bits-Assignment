@@ -48,6 +48,7 @@ private fun DefaultPreview() {
 /**
  * This function draws Tab Options in the screen when called.
  *
+ * @param modifier This is the modifications passed down by the parent Function
  * @param tabList This contains the List of the String which should be displayed at the Screen
  * @param selectedItem This is the current Selected Item
  * @param innerPadding This is the Left and Right Padding against the whole Row
@@ -58,6 +59,7 @@ private fun DefaultPreview() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TabOptionListUI(
+    modifier: Modifier = Modifier,
     tabList: List<String>,
     selectedItem: Int,
     innerPadding: Dp = 8.dp,
@@ -67,7 +69,6 @@ fun TabOptionListUI(
 ) {
 
     // Parent Layout with a padding given by the parent function
-
     ElevatedCard(
         elevation = CardDefaults.elevatedCardElevation(
             defaultElevation = 3.dp
@@ -79,7 +80,7 @@ fun TabOptionListUI(
 
     ) {
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .background(MaterialTheme.colorScheme.surface)
                 .fillMaxWidth()
         ) {

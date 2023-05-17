@@ -37,11 +37,15 @@ private fun DefaultPreview() {
 
 /**
  * This is the water Statistics Screen which shows various Charts and Graphs
+ *
+ * @param modifier This is the modification passed down from the parent Layout
  */
 @Composable
-fun WaterStatisticsScreen() {
+fun WaterStatisticsScreen(
+    modifier: Modifier = Modifier
+) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.secondary)
     ) {

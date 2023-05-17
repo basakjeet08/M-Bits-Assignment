@@ -179,7 +179,7 @@ fun PieChartUI(
  * @param floatingDataList This is the list of the Floating Data according to which graph will form
  * @param colorList This is the List of colors which should be used
  */
-fun DrawScope.drawPieChart(
+private fun DrawScope.drawPieChart(
     componentSize: Size,
     floatingDataList: List<Float>,
     colorList: List<Color>

@@ -81,18 +81,10 @@ fun LineGraphUI(
 ) {
 
     // Y Axis Marker bounds are held by these variables
-    var yLowerReadingRange = 0
-    var yUpperReadingRange = 0
-
-    // This function calculates the Bounds of the Y Axis and also sets the above two variable values
-    calculateReadingsBounds(
-        yAxisReadingsList = yAxisReadings,
-        yMarkerCount = numOfYMarkers,
-        setYReadingsRange = { lower, upper ->
-            yLowerReadingRange = lower
-            yUpperReadingRange = upper
-        }
-    )
+    val yLowerReadingRange =
+        (yAxisReadings.maxOf { it.min() } / numOfYMarkers).toInt() * numOfYMarkers
+    val yUpperReadingRange =
+        ((yAxisReadings.maxOf { it.max() } / numOfYMarkers).toInt() + 1) * numOfYMarkers
 
     // This canvas draws the complex Line Chart UI
     Canvas(
@@ -147,50 +139,6 @@ fun LineGraphUI(
         )
     }
 }
-
-
-/**
- * This function calculates the Minimum and Maximum Markers of Y Axis and returns them to the parent
- * using a lambda Function
- *
- * @param yAxisReadingsList This is the set of coordinates of the Y Axis Readings
- * @param yMarkerCount This is the Number of Markers to be set on Y Axis
- * @param setYReadingsRange This is the lambda function which sends the minimum and maximum value to the
- * parent function
- */
-private fun calculateReadingsBounds(
-    yAxisReadingsList: List<List<Float>>,
-    yMarkerCount: Int,
-    setYReadingsRange: (yLowerBound: Int, yUpperBound: Int) -> Unit,
-) {
-
-    // These are the Minimum and Maximum readings that needs to be shown
-    var yMaxReading = yAxisReadingsList[0][0]
-    var yMinReading = yAxisReadingsList[0][0]
-
-    // Searching for the Minimum and maximum from the list
-    yAxisReadingsList.forEach { readingSet ->
-
-        readingSet.forEach {
-            if (yMaxReading < it)
-                yMaxReading = it
-
-            if (yMinReading > it)
-                yMinReading = it
-        }
-    }
-
-    // Finding the Min and Maximum of the Given Readings
-    val yUpperBound = ((yMaxReading / yMarkerCount).toInt() + 1) * yMarkerCount
-    val yLowerBounds = ((yMinReading / yMarkerCount).toInt() - 1) * yMarkerCount
-
-    // Setting the reading Bounds back to the Parent for further processing
-    setYReadingsRange(
-        if (yLowerBounds >= 0) yLowerBounds else 0,
-        yUpperBound
-    )
-}
-
 
 /**
  * This function draws the Axes and the Markers of the Graph
@@ -351,11 +299,11 @@ private fun DrawScope.plotGraphPoints(
         )
     }
 
-    // Path Variable
-    val path = Path()
-
     // This loop makes the curved line between two points
     for (i in 0 until graphCoordinatesList.size) {
+
+        // Path Variable
+        val path = Path()
 
         // This is the current coordinate set
         val coordinates = graphCoordinatesList[i]

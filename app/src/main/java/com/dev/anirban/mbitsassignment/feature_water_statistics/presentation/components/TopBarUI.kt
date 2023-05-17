@@ -35,11 +35,15 @@ private fun DefaultPreview() {
 
 /**
  * This is the Top App Bar of the App
+ *
+ * @param modifier Modifications provided by the parent Function
  */
 @Composable
-fun TopBarUI() {
+fun TopBarUI(
+    modifier: Modifier = Modifier
+) {
     SmallTopAppBar(
-        modifier = Modifier,
+        modifier = modifier,
         navigationIcon = {
 
             // Navigation Image / Back Button
