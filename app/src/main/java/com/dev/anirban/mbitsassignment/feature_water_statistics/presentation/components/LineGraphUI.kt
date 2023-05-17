@@ -10,10 +10,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -352,33 +351,60 @@ private fun DrawScope.plotGraphPoints(
         )
     }
 
-    // drawing the Circle points and the Curved Line
-    graphCoordinatesList.forEachIndexed { indexSet, coordinateSet ->
+    // Path Variable
+    val path = Path()
 
-        // Coordinates of the previous variable of the same set of coordinate given
-        var previousPoint = graphCoordinatesList[indexSet][0]
+    // This loop makes the curved line between two points
+    for (i in 0 until graphCoordinatesList.size) {
 
-        // Draws the Design for every Set of Coordinates and keeps the different sets separated
-        coordinateSet.forEachIndexed { index, currentPoint ->
+        // This is the current coordinate set
+        val coordinates = graphCoordinatesList[i]
 
+        // Moving to the start path of the the coordinate set to start making the Curved lines
+        path.moveTo(
+            coordinates[0].x,
+            coordinates[0].y
+        )
+
+        // Inner Loop which draws the Lines from point to point of a single coordinate sets
+        for (index in 0 until coordinates.size - 1) {
+
+            // Control Points
+            val control1X = (coordinates[index].x + coordinates[index + 1].x) / 2f
+            val control1Y = coordinates[index].y
+            val control2X = (coordinates[index].x + coordinates[index + 1].x) / 2f
+            val control2Y = coordinates[index + 1].y
+
+            // Defining the path from the last stayed to the next point
+            path.cubicTo(
+                x1 = control1X,
+                y1 = control1Y,
+                x2 = control2X,
+                y2 = control2Y,
+                x3 = coordinates[index + 1].x,
+                y3 = coordinates[index + 1].y
+            )
+        }
+
+        // Drawing path after defining all the points of a single coordinate set in the path
+        drawPath(
+            path = path,
+            color = lineColor[i],
+            style = Stroke(
+                width = 4f
+            )
+        )
+    }
+
+    // This loop draws the circles or the points of the coordinates1
+    graphCoordinatesList.forEachIndexed { index, offsets ->
+        offsets.forEach {
             // This function draws the Circle points
             drawCircle(
-                color = dotColor[indexSet],
+                color = dotColor[index],
                 radius = 8f,
-                center = currentPoint
+                center = it
             )
-
-            if (index != 0) {
-
-                // This function draws the curved Lines
-                drawLine(
-                    color = lineColor[indexSet],
-                    start = previousPoint,
-                    end = currentPoint,
-                    strokeWidth = 3f
-                )
-            }
-            previousPoint = currentPoint
         }
     }
 }
