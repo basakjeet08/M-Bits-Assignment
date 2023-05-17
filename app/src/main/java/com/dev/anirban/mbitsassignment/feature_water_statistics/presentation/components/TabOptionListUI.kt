@@ -1,14 +1,17 @@
 package com.dev.anirban.mbitsassignment.feature_water_statistics.presentation.components
 
 import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,7 +31,7 @@ import com.dev.anirban.mbitsassignment.ui.theme.MBitsAssignmentTheme
     showBackground = true
 )
 @Composable
-private fun DefaultPreviewLoading() {
+private fun DefaultPreview() {
     MBitsAssignmentTheme {
         TabOptionListUI(
             tabList = listOf(
@@ -45,6 +48,7 @@ private fun DefaultPreviewLoading() {
 /**
  * This function draws Tab Options in the screen when called.
  *
+ * @param modifier This is the modifications passed down by the parent Function
  * @param tabList This contains the List of the String which should be displayed at the Screen
  * @param selectedItem This is the current Selected Item
  * @param innerPadding This is the Left and Right Padding against the whole Row
@@ -52,8 +56,10 @@ private fun DefaultPreviewLoading() {
  * @param strokeWidth This is the width of the stroke which will be displayed under selected Item
  * @param onNewTabClicked This changes the Tab
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TabOptionListUI(
+    modifier: Modifier = Modifier,
     tabList: List<String>,
     selectedItem: Int,
     innerPadding: Dp = 8.dp,
@@ -63,49 +69,67 @@ fun TabOptionListUI(
 ) {
 
     // Parent Layout with a padding given by the parent function
-    Row(
-        modifier = Modifier
-            .padding(
-                start = innerPadding,
-                end = innerPadding
-            )
-            .fillMaxWidth()
+    ElevatedCard(
+        elevation = CardDefaults.elevatedCardElevation(
+            defaultElevation = 3.dp
+        ),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = Color.Transparent
+        ),
+        shape = RectangleShape
+
     ) {
-
-        // Taking Each Item of the Tab List Items and making the Tab layout
-        tabList.forEachIndexed { index: Int, option: String ->
-
-            // Text of the Option to be showed
-            Text(
-                text = option,
+        Box(
+            modifier = modifier
+                .background(MaterialTheme.colorScheme.surface)
+                .fillMaxWidth()
+        ) {
+            Row(
                 modifier = Modifier
-                    .weight(1f)
-                    .size(34.dp)
-                    .clickable {
+                    .padding(
+                        start = innerPadding,
+                        end = innerPadding,
+                        top = 16.dp
+                    )
+                    .fillMaxWidth()
+            ) {
 
-                        // Changing the selected Item to the Item Index Clicked to move the State
-                        onNewTabClicked(index)
-                    }
-                    // This draws the Line Under the Option
-                    .drawBehind {
+                // Taking Each Item of the Tab List Items and making the Tab layout
+                tabList.forEachIndexed { index: Int, option: String ->
 
-                        // Checking if the Option is selected
-                        if (index == selectedItem)
-                            drawLine(
-                                brush = brush,
-                                start = Offset(0f, size.height),
-                                end = Offset(size.width, size.height),
-                                strokeWidth = strokeWidth
-                            )
-                    },
+                    // Text of the Option to be showed
+                    Text(
+                        text = option,
+                        modifier = Modifier
+                            .weight(1f)
+                            .size(34.dp)
+                            .clickable {
 
-                // Text and Font Properties
-                textAlign = TextAlign.Center,
-                color = if (selectedItem == index) CustomBlue else CustomGrey,
-                fontFamily = InterFontFamily,
-                fontWeight = FontWeight.W800,
-                fontSize = 14.sp
-            )
+                                // Changing the selected Item to the Item Index Clicked to move the State
+                                onNewTabClicked(index)
+                            }
+                            // This draws the Line Under the Option
+                            .drawBehind {
+
+                                // Checking if the Option is selected
+                                if (index == selectedItem)
+                                    drawLine(
+                                        brush = brush,
+                                        start = Offset(0f, size.height),
+                                        end = Offset(size.width, size.height),
+                                        strokeWidth = strokeWidth
+                                    )
+                            },
+
+                        // Text and Font Properties
+                        textAlign = TextAlign.Center,
+                        color = if (selectedItem == index) CustomBlue else CustomGrey,
+                        fontFamily = InterFontFamily,
+                        fontWeight = FontWeight.W800,
+                        fontSize = 14.sp
+                    )
+                }
+            }
         }
     }
 }

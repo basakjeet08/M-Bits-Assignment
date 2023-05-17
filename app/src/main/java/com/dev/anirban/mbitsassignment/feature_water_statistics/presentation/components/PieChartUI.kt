@@ -21,9 +21,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dev.anirban.mbitsassignment.ui.theme.MBitsAssignmentTheme
-import com.dev.anirban.mbitsassignment.ui.theme.pieChartBlue
-import com.dev.anirban.mbitsassignment.ui.theme.pieChartGreen
-import com.dev.anirban.mbitsassignment.ui.theme.pieChartRed
+import com.dev.anirban.mbitsassignment.ui.theme.customBlueForCharts
+import com.dev.anirban.mbitsassignment.ui.theme.customGreenForCharts
+import com.dev.anirban.mbitsassignment.ui.theme.customRedForCharts
 
 // Preview Function
 @Preview("Light")
@@ -33,7 +33,7 @@ import com.dev.anirban.mbitsassignment.ui.theme.pieChartRed
     showBackground = true
 )
 @Composable
-private fun DefaultPreviewLoading() {
+private fun DefaultPreview() {
     MBitsAssignmentTheme {
 
         PieChartUI(
@@ -43,9 +43,9 @@ private fun DefaultPreviewLoading() {
                 Pair("Soft Drink", 500.0f)
             ),
             colorList = listOf(
-                pieChartBlue,
-                pieChartGreen,
-                pieChartRed
+                customBlueForCharts,
+                customGreenForCharts,
+                customRedForCharts
             ),
             unit = "mL"
         )
@@ -149,7 +149,7 @@ fun PieChartUI(
                         // Text Features
                         textAlign = TextAlign.Center,
                         fontSize = 14.sp,
-                        fontWeight = FontWeight.W400
+                        fontWeight = FontWeight.W300
                     )
 
                     // Checking if the data should be displayed in SI unit or Cgs
@@ -179,7 +179,7 @@ fun PieChartUI(
  * @param floatingDataList This is the list of the Floating Data according to which graph will form
  * @param colorList This is the List of colors which should be used
  */
-fun DrawScope.drawPieChart(
+private fun DrawScope.drawPieChart(
     componentSize: Size,
     floatingDataList: List<Float>,
     colorList: List<Color>

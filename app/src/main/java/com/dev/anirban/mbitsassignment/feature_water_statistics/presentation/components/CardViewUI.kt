@@ -1,16 +1,13 @@
 package com.dev.anirban.mbitsassignment.feature_water_statistics.presentation.components
 
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,7 +25,7 @@ import com.dev.anirban.mbitsassignment.ui.theme.MBitsAssignmentTheme
     showBackground = true
 )
 @Composable
-private fun DefaultPreviewLoading() {
+private fun DefaultPreview() {
     MBitsAssignmentTheme {
         CardViewUI(
             cardHeading = "Monthly Progress",
@@ -57,26 +54,40 @@ fun CardViewUI(
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 16.dp, start = 16.dp, end = 16.dp),
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = Color.Transparent
+        )
     ) {
 
-        // Heading Text of the CardView
-        Text(
-            text = cardHeading,
+        Column(
             modifier = Modifier
-                .padding(top = 16.dp, start = 16.dp),
+                .background(MaterialTheme.colorScheme.surface)
+                .fillMaxWidth()
+        ) {
 
-            // Text and Font Properties
-            textAlign = TextAlign.Center,
-            fontFamily = InterFontFamily,
-            fontWeight = FontWeight.W800,
-            fontSize = 16.sp
-        )
+            // Heading Text of the CardView
+            Text(
+                text = cardHeading,
+                modifier = Modifier
+                    .padding(top = 16.dp, start = 16.dp),
 
-        // Height Spacing of 4 dp
-        Spacer(modifier = Modifier.height(4.dp))
+                // Text and Font Properties
+                textAlign = TextAlign.Center,
+                fontFamily = InterFontFamily,
+                fontWeight = FontWeight.W600,
+                fontSize = 16.sp
+            )
 
-        // Graph Body Function
-        body()
+            // Height Spacing of 4 dp
+            Spacer(modifier = Modifier.height(4.dp))
+
+            // Graph Body Function
+            body()
+
+            // Height of 8 Dp for making space in the card after the main Content
+            Spacer(modifier = Modifier.height(8.dp))
+        }
     }
 }
