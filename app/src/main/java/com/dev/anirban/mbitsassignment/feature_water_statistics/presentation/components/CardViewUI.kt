@@ -85,6 +85,9 @@ fun CardViewUI(
 
             // Graph Body Function
             body()
+
+            // Height of 8 Dp for making space in the card after the main Content
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }

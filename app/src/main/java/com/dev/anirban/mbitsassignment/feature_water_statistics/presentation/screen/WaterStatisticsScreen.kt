@@ -1,18 +1,23 @@
 package com.dev.anirban.mbitsassignment.feature_water_statistics.presentation.screen
 
 import android.content.res.Configuration
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.dev.anirban.mbitsassignment.feature_water_statistics.presentation.components.*
 import com.dev.anirban.mbitsassignment.ui.theme.*
 
@@ -110,29 +115,85 @@ fun WaterStatisticsScreen() {
 
             // This function draws the Line chart with one Single Line
             CardViewUI(cardHeading = "Beverages") {
-                LineGraphUI(
-                    yAxisReadings = listOf(
-                        listOf(3.8f, 3f, 2f, 3.9f, 4.9f, 4.2f, 3.8f),
-                        listOf(3.5f, 2.2f, 3f, 3.4f, 3f, 4.4f, 3f)
-                    ),
-                    xAxisReadings = listOf(
-                        "Jan",
-                        "Mar",
-                        "May",
-                        "Jul",
-                        "Sep",
-                        "Nov",
-                        "Dec"
-                    ),
-                    lineColor = listOf(customGreenForCharts, customBlueForCharts),
-                    dotColor = listOf(customRedForCharts, customYellowForCharts),
-                    numOfXMarkers = 7,
-                    numOfYMarkers = 5,
-                    height = 200.dp,
-                    textColor = MaterialTheme.colorScheme.onSurface.toArgb()
-                )
+
+                // Defining the UI in the body of this Card
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+
+                    // This creates the line graph with 2 lines
+                    LineGraphUI(
+                        yAxisReadings = listOf(
+                            listOf(3.8f, 3f, 2f, 3.9f, 4.9f, 4.2f, 3.8f),
+                            listOf(3.5f, 2.2f, 3f, 3.4f, 3f, 4.4f, 3f)
+                        ),
+                        xAxisReadings = listOf(
+                            "6-7",
+                            "8-9",
+                            "10-11",
+                            "12-1",
+                            "2-3",
+                            "4-5",
+                            "6-7"
+                        ),
+                        lineColor = listOf(customGreenForCharts, customBlueForCharts),
+                        dotColor = listOf(customRedForCharts, customYellowForCharts),
+                        numOfXMarkers = 7,
+                        numOfYMarkers = 5,
+                        height = 200.dp,
+                        textColor = MaterialTheme.colorScheme.onSurface.toArgb()
+                    )
+
+                    // This function contains the Color Codes details
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 24.dp, top = 24.dp, end = 24.dp, bottom = 8.dp)
+                    ) {
+
+                        // List of the color code which needs to be shown in UI
+                        listOf(
+                            Pair(customBlueForCharts, "Water"),
+                            Pair(customGreenForCharts, "Juice")
+                        ).forEach {
+
+                            // This row is the Color Code UI
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .weight(1f)
+                            ) {
+
+                                // Making the Rectangle
+                                Canvas(
+                                    modifier = Modifier.size(16.dp)
+                                ) {
+                                    drawRect(
+                                        color = it.first
+                                    )
+                                }
+
+                                // Spacer of 12 dp
+                                Spacer(modifier = Modifier.width(12.dp))
+
+                                // This is the text of the color code
+                                Text(
+                                    text = it.second,
+
+                                    // Text and Font Properties
+                                    fontFamily = InterFontFamily,
+                                    fontWeight = FontWeight.W100,
+                                    color = CustomGrey,
+                                    fontSize = 16.sp
+                                )
+                            }
+                        }
+                    }
+                }
             }
 
+            // Spacer of 16 dp
             Spacer(modifier = Modifier.height(16.dp))
         }
     }

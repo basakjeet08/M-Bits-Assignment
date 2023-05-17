@@ -149,7 +149,7 @@ fun PieChartUI(
                         // Text Features
                         textAlign = TextAlign.Center,
                         fontSize = 14.sp,
-                        fontWeight = FontWeight.W400
+                        fontWeight = FontWeight.W300
                     )
 
                     // Checking if the data should be displayed in SI unit or Cgs
