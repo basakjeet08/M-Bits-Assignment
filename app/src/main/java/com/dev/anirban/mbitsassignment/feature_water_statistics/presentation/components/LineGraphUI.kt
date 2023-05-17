@@ -21,7 +21,6 @@ import com.dev.anirban.mbitsassignment.ui.theme.MBitsAssignmentTheme
 import com.dev.anirban.mbitsassignment.ui.theme.customBlueForCharts
 import com.dev.anirban.mbitsassignment.ui.theme.customGreenForCharts
 
-
 // Preview Function
 @Preview("Light")
 @Preview(
@@ -81,10 +80,27 @@ fun LineGraphUI(
 ) {
 
     // Y Axis Marker bounds are held by these variables
-    val yLowerReadingRange =
-        (yAxisReadings.maxOf { it.min() } / numOfYMarkers).toInt() * numOfYMarkers
+    var yUpper = yAxisReadings[0][0]
+    var yLower = yAxisReadings[0][0]
+
+    // Finding the upper bound and Lower Bound of Y
+    yAxisReadings.forEach { readings ->
+        readings.forEach {
+            if (it > yUpper)
+                yUpper = it
+
+            if (it < yLower)
+                yLower = it
+        }
+    }
+
+    // Storing the upper Bound and Lower bound of Y Markers
     val yUpperReadingRange =
-        ((yAxisReadings.maxOf { it.max() } / numOfYMarkers).toInt() + 1) * numOfYMarkers
+        yUpper.toInt() + ((numOfYMarkers - 1) - (yUpper.toInt() % (numOfYMarkers - 1)))
+    val yLowerReadingRange = (yLower.toInt() - (yLower.toInt() % (numOfYMarkers - 1)))
+
+    // Difference between each Y Markers
+    val yDividend = (yUpperReadingRange - yLowerReadingRange) / (numOfYMarkers - 1)
 
     // This canvas draws the complex Line Chart UI
     Canvas(
@@ -96,100 +112,83 @@ fun LineGraphUI(
         // Decreasing the Size of Component than the Canvas Size to make the UI look better
         val componentSize = size / 1.20f
 
-        // X and Y Coordinates Padding Values from the Top and start/left
-        val xPadding = (size.width - componentSize.width) / 2f
-        val yPadding = (size.height - componentSize.height) / 2f
+        // X Coordinates of the Graph
+        val xOrigin = (size.width - componentSize.width) / 2f
+        val xMax = size.width - xOrigin
 
-        // These variables are the spaces between their respective Markers Markers
-        var spaceBetweenXMarkers = 0f
-        var spaceBetweenYMarkers = 0f
+        // Y Coordinates of the Graph
+        val yOrigin = (size.height - componentSize.height) / 2f
+        val yMax = size.height - yOrigin
 
-        // This variables contains the lowest Marker in the Graph in Y - Axis
-        var yLeastMarker = 0
+        // Total Size of each of the Coordinates of the Graph
+        val xTotalSize = xMax - xOrigin
+        val yTotalSize = yMax - yOrigin
+
+        // Scale of both Axis of the Graph
+        val yScale = yTotalSize / numOfYMarkers
+        val xScale = xTotalSize / numOfXMarkers
 
         // This function draws the Axis and the Markers
-        drawGraphAxisAndMarkersX(
-            yUpperBounds = yUpperReadingRange,
-            yLowerBounds = yLowerReadingRange,
-            xMarkerCount = numOfXMarkers,
+        drawMargins(
             yMarkerCount = numOfYMarkers,
-            xPadding = xPadding,
-            yPadding = yPadding,
+            xOrigin = xOrigin,
             xAxisMarkers = xAxisReadings,
-            setLeastMarker = {
-                yLeastMarker = it
-            },
-            textColor = textColor
-        ) { ySpace, xSpace ->
-            spaceBetweenYMarkers = ySpace
-            spaceBetweenXMarkers = xSpace
-        }
+            textColor = textColor,
+            yUpperBound = yUpperReadingRange,
+            yDividend = yDividend,
+            yScale = yScale,
+            xScale = xScale,
+            xMax = xMax
+        )
 
         // This function plots the Graph and joins the Line
-        plotGraphPoints(
+        plotPoints(
             yAxisReadingsSet = yAxisReadings,
-            yOffsetRatio = spaceBetweenYMarkers,
-            xOffsetRatio = spaceBetweenXMarkers,
+            xScale = xScale,
             yUpperBound = yUpperReadingRange,
-            yLowerBound = yLowerReadingRange,
-            yMarkerCount = numOfYMarkers,
-            yLeastMarker = yLeastMarker,
             dotColor = dotColor,
-            lineColor = lineColor
+            lineColor = lineColor,
+            yDividend = yDividend,
+            yScale = yScale
         )
     }
 }
 
 /**
- * This function draws the Axes and the Markers of the Graph
+ * This function draws the Margins and the Markers in the Graph
  *
- * @param yUpperBounds This is the upper Bounds for Y-Axis
- * @param yLowerBounds This is the Lower Bounds for Y- Axis
- * @param xMarkerCount this is the count of how many markers should be there on X - Axis
- * @param yMarkerCount This is the count of how many markers should be there on Y - Axis
- * @param xPadding This is the padding from the Left of the Canvas
- * @param yPadding This is the padding from the top of the Canvas
- * @param xAxisMarkers This is the List of Strings which needs to be there on X - Axis
- * @param setLeastMarker This function is used to set the Lowest Marker in the Graph Y - Axis
- * @param textColor This is the Color of the Text of the Graph Markers
- * @param setOffsetOfAxis This function sets the Offset for both the Axis
+ * @param yUpperBound This is the upper Marker Limit of the Graph
+ * @param yDividend This is the difference between each graph Marker
+ * @param xAxisMarkers This is the Markers that should be written in the X - Axis
+ * @param yMarkerCount This is the Marker Count of the Y - Axis
+ * @param xOrigin This is the Origin of X - Axis
+ * @param yScale This is the scale of Y - Axis
+ * @param textColor This is the text color of the Markers
+ * @param xScale This is the scale of X - Axis
+ * @param xMax This is the maximum floating coordinate where the graph ends
  */
-private fun DrawScope.drawGraphAxisAndMarkersX(
-    yUpperBounds: Int,
-    yLowerBounds: Int,
-    xMarkerCount: Int,
-    yMarkerCount: Int,
-    xPadding: Float,
-    yPadding: Float,
+private fun DrawScope.drawMargins(
+    yUpperBound: Int,
+    yDividend: Int,
     xAxisMarkers: List<String>,
-    setLeastMarker: (Int) -> Unit,
+    yMarkerCount: Int,
+    xOrigin: Float,
+    yScale: Float,
     textColor: Int,
-    setOffsetOfAxis: (yOffsetRatio: Float, xOffsetRatio: Float) -> Unit,
+    xScale: Float,
+    xMax: Float
 ) {
 
-    // Total Size of the Canvas which can be used for the Graph
-    val xTotalSize = size.width - 2 * xPadding
-    val yTotalSize = size.height - 2 * yPadding
-
-    // This is the Floating Value to Canvas Px Ratio
-    val yOffsetRatio = yTotalSize / (yMarkerCount + 0.25f)
-    val xOffsetRatio = xTotalSize / xMarkerCount
-
-    // Sending the offset back to the parent function
-    setOffsetOfAxis(yOffsetRatio, xOffsetRatio)
-
-    // Drawing the Graph X Axis Parallel Lines
     for (i in 1..yMarkerCount) {
 
         // This is the value of the current Y Axis Marker
-        val currentYMarker =
-            yUpperBounds - (((yUpperBounds - yLowerBounds) / yMarkerCount) * (i - 1))
+        val currentYMarker = yUpperBound - (i - 1) * yDividend
 
         // This draws the String Marker
         drawContext.canvas.nativeCanvas.drawText(
             currentYMarker.toString(),
-            xPadding - 24f,
-            (yOffsetRatio * i) + 12f,
+            xOrigin - 24f,
+            (yScale * i) + 12f,
             Paint().apply {
                 color = textColor
                 textSize = 12.sp.toPx()
@@ -201,24 +200,17 @@ private fun DrawScope.drawGraphAxisAndMarkersX(
         // This draws the Lines for the readings parallel to X Axis
         drawLine(
             start = Offset(
-                x = xPadding + 24f,
-                y = yOffsetRatio * i
+                x = xOrigin + 24f,
+                y = yScale * i
             ),
             color = Color.Gray,
             end = Offset(
-                x = size.width - xPadding,
-                y = yOffsetRatio * i
+                x = xMax,
+                y = yScale * i
             ),
-            strokeWidth = 2f
+            strokeWidth = 1f
         )
     }
-
-    // This variable contains the Lowest Marker in the Y - Axis
-    val yLeastMarker =
-        yUpperBounds - (((yUpperBounds - yLowerBounds) / yMarkerCount) * (yMarkerCount - 1))
-
-    // This function sets the lowest Marker of the Graph in the Parent Function
-    setLeastMarker(yLeastMarker)
 
     // This Draws the Y Markers below the Graph
     xAxisMarkers.forEachIndexed { index, currentMarker ->
@@ -226,8 +218,8 @@ private fun DrawScope.drawGraphAxisAndMarkersX(
         // This draws the String Marker
         drawContext.canvas.nativeCanvas.drawText(
             currentMarker,
-            xOffsetRatio * (index + 1),
-            yOffsetRatio * (yMarkerCount + 1),
+            xScale * (index + 1),
+            yScale * (yMarkerCount + 1),
             Paint().apply {
                 color = textColor
                 textSize = 12.sp.toPx()
@@ -239,38 +231,25 @@ private fun DrawScope.drawGraphAxisAndMarkersX(
 }
 
 /**
- * This function plots the Graph Points and joins them using a Curved Line
+ * This is the function which plots the points in the Graph
  *
- * @param yAxisReadingsSet This contains set of the Y - Coordinates of the Points to be plotted in the Graph
- * @param yOffsetRatio This is the Offset from the Y Axis or TOP
- * @param xOffsetRatio This is the Offset from the X Axis or the Left
- * @param yUpperBound This is the Upper Bounds of the Graph Marker
- * @param yLowerBound This is the Lower Bounds of the Graph marker
- * @param yMarkerCount This is the count of how many markers are shown in the Graph
- * @param yLeastMarker This is the Lowest Marker point of the Y Axis
- * @param dotColor This is the color of all the dots of this type of reading
- * @param lineColor This is the color of all the line of this type of reading
+ * @param yAxisReadingsSet These contains the points of the Graph
+ * @param xScale This is the xScale of the Graph
+ * @param yUpperBound This is the upper bounds of the current Markers in the Graph
+ * @param lineColor This is the color of the Line which will be showed in the curved lines
+ * @param dotColor This is the color of the dots which will be shown in the points
+ * @param yDividend This is the difference between the Markers of Y - Axis
+ * @param yScale This is the scale of the Y - Axis
  */
-private fun DrawScope.plotGraphPoints(
+private fun DrawScope.plotPoints(
     yAxisReadingsSet: List<List<Float>>,
-    yOffsetRatio: Float,
-    xOffsetRatio: Float,
+    xScale: Float,
     yUpperBound: Int,
-    yLowerBound: Int,
-    yMarkerCount: Int,
-    yLeastMarker: Int,
+    lineColor: List<Color>,
     dotColor: List<Color>,
-    lineColor: List<Color>
+    yDividend: Int,
+    yScale: Float
 ) {
-
-    // This is the Size of the Graph Y - Axis
-    val ySizeOfGraph = yOffsetRatio * yMarkerCount
-
-    // Difference between Maximum and the Minimum Markers
-    val differenceBetweenMaxAndMin = yUpperBound - yLowerBound
-
-    // Scale of Y Change in Px according to change in Floating Point
-    val yRatio = ySizeOfGraph / differenceBetweenMaxAndMin
 
     // This variable contains all the Offset of all the graph coordinates
     val graphCoordinatesList: MutableList<MutableList<Offset>> = mutableListOf()
@@ -283,11 +262,13 @@ private fun DrawScope.plotGraphPoints(
 
         coordinateSet.forEachIndexed { index, fl ->
 
+            val currentYCoordinate = (yScale + (yUpperBound - fl) * yScale / yDividend)
+
             // Adding the Coordinates of points in the same Set
             graphCoordinates.add(
                 Offset(
-                    x = 24f + (index + 1) * xOffsetRatio,
-                    y = ySizeOfGraph - (yRatio * (fl - yLeastMarker))
+                    x = 24f + (index + 1) * xScale,
+                    y = currentYCoordinate
                 )
             )
         }
