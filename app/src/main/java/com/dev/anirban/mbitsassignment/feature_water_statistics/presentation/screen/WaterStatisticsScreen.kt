@@ -6,7 +6,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -18,7 +20,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.dev.anirban.mbitsassignment.feature_water_statistics.presentation.components.*
+import com.dev.anirban.mbitsassignment.feature_water_statistics.presentation.stateholder.MyViewModel
 import com.dev.anirban.mbitsassignment.ui.theme.*
 
 // Preview Composable Function
@@ -44,6 +48,9 @@ private fun DefaultPreview() {
 fun WaterStatisticsScreen(
     modifier: Modifier = Modifier
 ) {
+
+    val myViewModel: MyViewModel = viewModel()
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -76,10 +83,38 @@ fun WaterStatisticsScreen(
                 .fillMaxHeight()
         ) {
 
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+
+                // Outlined Text field which takes input from the User
+                OutlinedTextField(
+                    value = myViewModel.inputData,
+                    onValueChange = {
+                        myViewModel.onInputChange(it)
+                    }
+                )
+
+                // This Button Updates the List
+                Button(
+                    onClick = { myViewModel.updateList() },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+                {
+                    Text(
+                        text = "Submit",
+                        modifier = Modifier
+                            .padding(4.dp)
+                    )
+                }
+            }
+
             // This function draws the Line chart with one Single Line
             CardViewUI(cardHeading = "Monthly Progress") {
                 LineGraphUI(
-                    yAxisReadings = listOf(listOf(6f, 5f, 4f, 6f, 7.5f, 7f, 6f)),
+                    yAxisReadings = myViewModel.yAxisReadingsData,
                     xAxisReadings = listOf(
                         "Jan",
                         "Mar",
