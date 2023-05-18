@@ -97,7 +97,14 @@ fun LineGraphUI(
     // Storing the upper Bound and Lower bound of Y Markers
     val yUpperReadingRange =
         yUpper.toInt() + ((numOfYMarkers - 1) - (yUpper.toInt() % (numOfYMarkers - 1)))
-    val yLowerReadingRange = (yLower.toInt() - (yLower.toInt() % (numOfYMarkers - 1)))
+
+    val yLowerReadingRange = if (yLower < 0)
+        if (yLower.toInt() % (numOfYMarkers - 1) == 0)
+            yLower.toInt()
+        else
+            (((yLower.toInt() / (numOfYMarkers - 1)) - 1) * (numOfYMarkers - 1))
+    else
+        (yLower.toInt() - (yLower.toInt() % (numOfYMarkers - 1)))
 
     // Difference between each Y Markers
     val yDividend = (yUpperReadingRange - yLowerReadingRange) / (numOfYMarkers - 1)
